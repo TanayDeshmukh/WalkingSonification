@@ -1,4 +1,5 @@
 import h5py
+import torch
 import numpy as np
 import torch.utils.data as data
 from os import walk
@@ -74,4 +75,4 @@ class GaitSequenceDataset(data.Dataset):
         return len(self.sequences)
     
     def __getitem__(self, idx):
-        return self.sequences[idx]
+        return torch.FloatTensor(self.sequences[idx])
