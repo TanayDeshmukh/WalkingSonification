@@ -22,10 +22,11 @@ class Encoder(nn.Module):
 
 class Decoder(nn.Module):
     
-    def __init__(self, embedding_dim, num_features, sequence_length):
+    def __init__(self, embedding_dim, num_features, sequence_length, device):
         super(Decoder, self).__init__()
         
         self.num_features = num_features
+        self.device = device
         self.embedding_dim = embedding_dim * 2
         self.sequence_length = sequence_length
     
@@ -35,7 +36,7 @@ class Decoder(nn.Module):
 
     def forward(self, sequence, hidden_state, cell_state):
 
-        predictions = torch.zeros(self.sequence_length, hidden_state.shape[-2], hidden_state.shape[-1]*hidden_state.shape[0]).to(device)
+        predictions = torch.zeros(self.sequence_length, hidden_state.shape[-2], hidden_state.shape[-1]*hidden_state.shape[0]).to(self.device)
         for i in range(self.sequence_length):
             x, (hidden_state, cell_state) = self.lstm(sequence, (hidden_state, cell_state))
             predictions[i] = x
@@ -44,14 +45,18 @@ class Decoder(nn.Module):
 
 class AutoEncoder(nn.Module):
 
-    def __init__(self, num_features, embedding_dim, sequence_length, batch_size, device):
+    def __init__(self, num_features, embedding_dim, sequence_length, batch_size, load_pretrained, 
+                model_encoder_save_path, model_decoder_save_path, device):
         super(AutoEncoder, self).__init__()
 
         self.num_features = num_features
         self.batch_size = batch_size
         self.device = device
         self.encoder = Encoder(num_features, embedding_dim)
-        self.decoder = Decoder(embedding_dim, num_features, sequence_length)
+        self.decoder = Decoder(embedding_dim, num_features, sequence_length, device)
+        if load_pretrained:
+            self.encoder.load_state_dict(torch.load(model_encoder_save_path)['encoder'])
+            self.decoder.load_state_dict(torch.load(model_decoder_save_path)['decoder'])
     
     def init_decoder_hidden_states(self):
         # Change the first dimension to 2 if using bidirectional

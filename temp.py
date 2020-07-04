@@ -14,6 +14,9 @@ sequences = []
 max_len = 0
 min_len = math.inf
 
+lower_bound = 55
+upper_bound = 85
+
 for (dirpath, _, filenames) in walk(root_dir):
     cnt += 1
     if len(filenames) > 0:
@@ -55,9 +58,9 @@ for (dirpath, _, filenames) in walk(root_dir):
                         if left_turn_segments[left_contacts[i-1]] != 1: 
                             seq = flexion_angles[left_contacts[i-1]:left_contacts[i]]
                             seq_len = len(seq)
-                            if(seq_len <= 85 and seq_len >= 55):
-                                if 85-seq_len > 0:
-                                    repeat_tensor = np.tile(mean, (85-seq_len, 1))
+                            if(seq_len <= upper_bound and seq_len >= lower_bound):
+                                if uppper_bound-seq_len > 0:
+                                    repeat_tensor = np.tile(mean, (upper_bound-seq_len, 1))
                                     seq = np.append(seq, repeat_tensor, 0)
                                 sequences.append(seq)
                 else:
@@ -65,9 +68,9 @@ for (dirpath, _, filenames) in walk(root_dir):
                         if right_turn_segments[right_contacts[i-1]] != 1:
                             seq = flexion_angles[right_contacts[i-1]:right_contacts[i]]
                             seq_len = len(seq)
-                            if(seq_len <= 85 and seq_len >= 55):
-                                if 85-seq_len > 0:
-                                    repeat_tensor = np.tile(mean, (85-seq_len, 1))
+                            if(seq_len <= upper_bound and seq_len >= lower_bound):
+                                if upper_bound-seq_len > 0:
+                                    repeat_tensor = np.tile(mean, (upper_bound-seq_len, 1))
                                     seq = np.append(seq, repeat_tensor, 0)
                                 sequences.append(seq)
                 break
